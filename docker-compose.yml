@@ -1,0 +1,13 @@
+version: '3.1'
+services:
+  db:
+    image: postgres:13-alpine
+    restart: always
+    environment:
+      POSTGRES_DB: urbex
+      POSTGRES_USER: urbex
+      POSTGRES_PASSWORD: example
+    ports:
+      - 5440:5440
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data
