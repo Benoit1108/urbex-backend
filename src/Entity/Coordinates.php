@@ -27,6 +27,11 @@ class Coordinates
      */
     private ?string $longitude;
 
+    /**
+     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="coordiantes")
+     */
+    private $owner;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -52,6 +57,18 @@ class Coordinates
     public function setLongitude(string $longitude): self
     {
         $this->longitude = $longitude;
+
+        return $this;
+    }
+
+    public function getOwner(): ?User
+    {
+        return $this->owner;
+    }
+
+    public function setOwner(?User $owner): self
+    {
+        $this->owner = $owner;
 
         return $this;
     }

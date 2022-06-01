@@ -43,9 +43,27 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
      */
     private Collection $posts;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Coordinates::class, mappedBy="owner")
+     */
+    private $coordiantes;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Message::class, mappedBy="owner")
+     */
+    private $messages;
+
+    /**
+     * @ORM\ManyToMany(targetEntity=Conversation::class, inversedBy="owner")
+     */
+    private $conversations;
+
     public function __construct()
     {
         $this->posts = new ArrayCollection();
+        $this->coordiantes = new ArrayCollection();
+        $this->messages = new ArrayCollection();
+        $this->conversations = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -175,4 +193,87 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
         ];
     }
 
+    /**
+     * @return Collection<int, Coordinates>
+     */
+    public function getCoordiantes(): Collection
+    {
+        return $this->coordiantes;
+    }
+
+    public function addCoordiante(Coordinates $coordiante): self
+    {
+        if (!$this->coordiantes->contains($coordiante)) {
+            $this->coordiantes[] = $coordiante;
+            $coordiante->setOwner($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCoordiante(Coordinates $coordiante): self
+    {
+        if ($this->coordiantes->removeElement($coordiante)) {
+            // set the owning side to null (unless already changed)
+            if ($coordiante->getOwner() === $this) {
+                $coordiante->setOwner(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Message>
+     */
+    public function getMessages(): Collection
+    {
+        return $this->messages;
+    }
+
+    public function addMessage(Message $message): self
+    {
+        if (!$this->messages->contains($message)) {
+            $this->messages[] = $message;
+            $message->setOwner($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMessage(Message $message): self
+    {
+        if ($this->messages->removeElement($message)) {
+            // set the owning side to null (unless already changed)
+            if ($message->getOwner() === $this) {
+                $message->setOwner(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Conversation>
+     */
+    public function getConversations(): Collection
+    {
+        return $this->conversations;
+    }
+
+    public function addConversation(Conversation $conversation): self
+    {
+        if (!$this->conversations->contains($conversation)) {
+            $this->conversations[] = $conversation;
+        }
+
+        return $this;
+    }
+
+    public function removeConversation(Conversation $conversation): self
+    {
+        $this->conversations->removeElement($conversation);
+
+        return $this;
+    }
 }

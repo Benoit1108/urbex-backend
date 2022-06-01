@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\PostsRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -37,6 +39,21 @@ class Posts
      * @ORM\JoinColumn(nullable=false)
      */
     private $owner;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Comments::class, mappedBy="posts")
+     */
+    private $comments;
+
+    /**
+     * @ORM\OneToOne(targetEntity=Coordinates::class, cascade={"persist", "remove"})
+     */
+    private $coordinate;
+
+    public function __construct()
+    {
+        $this->comments = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -87,6 +104,48 @@ class Posts
     public function setOwner(?User $owner): self
     {
         $this->owner = $owner;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Comments>
+     */
+    public function getComments(): Collection
+    {
+        return $this->comments;
+    }
+
+    public function addComment(Comments $comment): self
+    {
+        if (!$this->comments->contains($comment)) {
+            $this->comments[] = $comment;
+            $comment->setPosts($this);
+        }
+
+        return $this;
+    }
+
+    public function removeComment(Comments $comment): self
+    {
+        if ($this->comments->removeElement($comment)) {
+            // set the owning side to null (unless already changed)
+            if ($comment->getPosts() === $this) {
+                $comment->setPosts(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getCoordinate(): ?Coordinates
+    {
+        return $this->coordinate;
+    }
+
+    public function setCoordinate(?Coordinates $coordinate): self
+    {
+        $this->coordinate = $coordinate;
 
         return $this;
     }
